@@ -1,14 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 import "./MerkleWhitelist.sol";
+import "./ERC721A.sol";
 
-contract NFT is ERC721URIStorage, Ownable, MerkleWhitelist {
+contract NFT is ERC721A, Ownable, MerkleWhitelist {
     // root hash of the whitelist merkle tree
     bytes32 public merkleRoot;
 
@@ -19,19 +19,15 @@ contract NFT is ERC721URIStorage, Ownable, MerkleWhitelist {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor(bytes32 _rootHash) ERC721("Merkle", "MRKL") {
+    constructor(bytes32 _rootHash) ERC721A("Merkle", "MRKL") {
         // console.log("Deploying merkle tree whitelist nft");
         publicWhitelistMerkleRoot = _rootHash;
     }
 
-    function whitelistMint(bytes32[] calldata _merkleProof)
+    function publicWhitelistMint(bytes32[] calldata _merkleProof)
         public
         onlyPublicWhitelist(_merkleProof)
     {
-        // bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
-        // bool proof = MerkleProof.verify(_merkleProof, merkleRoot, leaf);
-        // console.log("merkle proof: ", proof);
-        // require(proof, "Caller address is not whitelisted");
         console.log("mint success");
     }
 
