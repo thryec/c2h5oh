@@ -18,7 +18,7 @@ contract NFT is ERC721A, Ownable, MerkleWhitelist {
     // public mint suppoly
     uint256 public PUBLIC_MINT_QUANTITY = 400;
 
-    // withdraw addresses
+    // withdraw addresses - replace with actual address
     address addr1 = 0xfc86A64a8DE22CF25410F7601AcBd8d6630Da93D;
     address addr2 = 0x4265de963cdd60629d03FEE2cd3285e6d5ff6015;
     address addr3 = 0x1b33EBa79c4DD7243E5a3456fc497b930Db054b2;
@@ -53,9 +53,8 @@ contract NFT is ERC721A, Ownable, MerkleWhitelist {
 
     function withdrawFunds() public onlyOwner {
         // check contract funds >0
-        // split among 4 team addresses
         uint256 _amount = address(this).balance / 4;
-        console.log("withdraw amount: ", _amount);
+        require(_amount > 0, "Contract has no Ether");
         require(payable(addr1).send(_amount));
         require(payable(addr2).send(_amount));
         require(payable(addr3).send(_amount));
