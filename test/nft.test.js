@@ -12,8 +12,7 @@ describe('MerkleNFT', () => {
   let unwhitelisted
 
   let nft
-  let goodProof
-  let badProof
+  let proof
 
   beforeEach(async () => {
     ;[whitelist1, whitelist2, whitelist3, whitelist4, unwhitelisted] = await ethers.getSigners()
@@ -21,8 +20,8 @@ describe('MerkleNFT', () => {
     const leafNodes = whitelist.map((addr) => keccak256(addr.address))
     const merkleTree = new MerkleTree(leafNodes, keccak256, { sort: true })
     const rootHash = merkleTree.getRoot()
-    goodProof = merkleTree.getHexProof(whitelist1.address)
-    console.log('good proof: ', goodProof)
+    proof = merkleTree.getHexProof(keccak256(whitelist1.address))
+    console.log('proof: ', proof)
 
     const NFT = await ethers.getContractFactory('NFT')
     nft = await NFT.deploy(rootHash)
@@ -31,12 +30,11 @@ describe('MerkleNFT', () => {
 
   describe('Minting', () => {
     it('allows whitelisted address to mint', async () => {
-      await nft.connect(whitelist1).whitelistMint(goodProof)
+      await nft.connect(whitelist1).whitelistMint(proof)
     })
 
     it('does not allow un-whitelisted address to mint', async () => {
-      console.log('bad proof: ', badProof)
-      await nft.connect(unwhitelisted).whitelistMint(goodProof)
+      await nft.connect(unwhitelisted).whitelistMint(proof)
     })
   })
 })
