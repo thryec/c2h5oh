@@ -33,12 +33,14 @@ describe('MerkleNFT', () => {
       await nft.connect(whitelist1).whitelistMint(proof)
     })
 
-    it('does not allow un-whitelisted address to mint', async () => {
+    it('does not allow non-whitelisted address to mint', async () => {
       const badProof = merkleTree.getHexProof(keccak256(unwhitelisted.address))
       await expectRevert(
         nft.connect(unwhitelisted).whitelistMint(badProof),
         'MerkleWhitelist: Caller is not whitelisted',
       )
     })
+
+    it('requires user to send in correct amount of Ether', async () => {})
   })
 })

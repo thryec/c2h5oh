@@ -9,8 +9,20 @@ import "./MerkleWhitelist.sol";
 import "./ERC721A.sol";
 
 contract NFT is ERC721A, Ownable, MerkleWhitelist {
-    // root hash of the whitelist merkle tree
-    bytes32 public merkleRoot;
+    // public mint price
+    uint256 public MINT_PRICE = 0.2 ether;
+
+    // free mint suppoly
+    uint256 public FREE_MINT_QUANTITY = 100;
+
+    // public mint suppoly
+    uint256 public PUBLIC_MINT_QUANTITY = 400;
+
+    // withdraw addresses
+    address addr1 = 0xfc86A64a8DE22CF25410F7601AcBd8d6630Da93D;
+    address addr2 = 0x4265de963cdd60629d03FEE2cd3285e6d5ff6015;
+    address addr3 = 0x1b33EBa79c4DD7243E5a3456fc497b930Db054b2;
+    address addr4 = 0x92d79ccaCE3FC606845f3A66c9AeD75d8e5487A9;
 
     // track whitelist addresses that have already claimed their mint
     mapping(address => bool) public whitelistClaimed;
@@ -20,18 +32,33 @@ contract NFT is ERC721A, Ownable, MerkleWhitelist {
     Counters.Counter private _tokenIds;
 
     constructor(bytes32 _rootHash) ERC721A("Merkle", "MRKL") {
-        // console.log("Deploying merkle tree whitelist nft");
         publicWhitelistMerkleRoot = _rootHash;
+        // mint to team addresses
     }
 
-    function publicWhitelistMint(bytes32[] calldata _merkleProof)
-        public
-        onlyPublicWhitelist(_merkleProof)
-    {
-        console.log("mint success");
+    function publicWhitelistMint(
+        bytes32[] calldata _merkleProof,
+        uint256 quantity
+    ) public payable onlyPublicWhitelist(_merkleProof) {
+        require(quantity > 0 && quantity < 6, "Can only mint max 5 NFTs!");
+        require(msg.value >= quantity * MINT_PRICE, "Did not send enough eth.");
+        // check total supply just in case
+        // check mint time
+        _safeMint(msg.sender, quantity);
     }
 
     function updateRootHash(bytes32 _newRootHash) public onlyOwner {
-        merkleRoot = _newRootHash;
+        publicWhitelistMerkleRoot = _newRootHash;
+    }
+
+    function withdrawFunds() public onlyOwner {
+        // check contract funds >0
+        // split among 4 team addresses
+        uint256 _amount = address(this).balance / 4;
+        console.log("withdraw amount: ", _amount);
+        require(payable(addr1).send(_amount));
+        require(payable(addr2).send(_amount));
+        require(payable(addr3).send(_amount));
+        require(payable(addr4).send(_amount));
     }
 }

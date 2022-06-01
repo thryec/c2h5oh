@@ -5,6 +5,10 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MerkleWhitelist is Ownable {
+    // free mint
+    bytes32 public freeWhitelistMerkleRoot;
+
+    // public mint
     bytes32 public publicWhitelistMerkleRoot;
 
     // Frontend verify functions
