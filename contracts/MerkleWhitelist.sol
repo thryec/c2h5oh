@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract MerkleWhitelist is Ownable {
     bytes32 public publicWhitelistMerkleRoot;
 
-    //Frontend verify functions
-    function verifyPublicSender(address usewrAddress, bytes32[] memory proof)
+    // Frontend verify functions
+    function verifyPublicSender(address userAddress, bytes32[] memory proof)
         public
         view
         returns (bool)
@@ -16,7 +16,7 @@ contract MerkleWhitelist is Ownable {
         return _verify(proof, _hash(userAddress), publicWhitelistMerkleRoot);
     }
 
-    //Internal verify functions
+    // Internal verify functions
     function _verifyPublicSender(bytes32[] memory proof)
         internal
         view

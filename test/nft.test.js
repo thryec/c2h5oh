@@ -37,9 +37,8 @@ describe('MerkleNFT', () => {
       const badProof = merkleTree.getHexProof(keccak256(unwhitelisted.address))
       await expectRevert(
         nft.connect(unwhitelisted).whitelistMint(badProof),
-        'Caller address is not whitelisted',
+        'MerkleWhitelist: Caller is not whitelisted',
       )
-      // await nft.connect(unwhitelisted).whitelistMint(badProof)
     })
   })
 })

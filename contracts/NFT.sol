@@ -6,8 +6,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
+import "./MerkleWhitelist.sol";
 
-contract NFT is ERC721URIStorage, Ownable {
+contract NFT is ERC721URIStorage, Ownable, MerkleWhitelist {
     // root hash of the whitelist merkle tree
     bytes32 public merkleRoot;
 
@@ -20,16 +21,18 @@ contract NFT is ERC721URIStorage, Ownable {
 
     constructor(bytes32 _rootHash) ERC721("Merkle", "MRKL") {
         // console.log("Deploying merkle tree whitelist nft");
-        merkleRoot = _rootHash;
+        publicWhitelistMerkleRoot = _rootHash;
     }
 
-    function whitelistMint(bytes32[] calldata _merkleProof) public {
-        console.log("nessage sender", msg.sender);
-        bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
-        bool proof = MerkleProof.verify(_merkleProof, merkleRoot, leaf);
-        console.log("merkle proof: ", proof);
-        require(proof, "Caller address is not whitelisted");
-        // mint
+    function whitelistMint(bytes32[] calldata _merkleProof)
+        public
+        onlyPublicWhitelist(_merkleProof)
+    {
+        // bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
+        // bool proof = MerkleProof.verify(_merkleProof, merkleRoot, leaf);
+        // console.log("merkle proof: ", proof);
+        // require(proof, "Caller address is not whitelisted");
+        console.log("mint success");
     }
 
     function updateRootHash(bytes32 _newRootHash) public onlyOwner {
