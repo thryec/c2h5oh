@@ -24,10 +24,11 @@ contract NFT is ERC721URIStorage, Ownable {
     }
 
     function whitelistMint(bytes32[] calldata _merkleProof) public {
+        console.log("nessage sender", msg.sender);
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
         bool proof = MerkleProof.verify(_merkleProof, merkleRoot, leaf);
         console.log("merkle proof: ", proof);
-        // require(proof, "Invalid whitelist address");
+        require(proof, "Caller address is not whitelisted");
         // mint
     }
 

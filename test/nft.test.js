@@ -1,4 +1,4 @@
-// const { constants, expectRevert } = require('@openzeppelin/test-helpers')
+const { expectRevert } = require('@openzeppelin/test-helpers')
 const { expect } = require('chai')
 const { ethers } = require('hardhat')
 const { MerkleTree } = require('merkletreejs')
@@ -11,6 +11,7 @@ describe('MerkleNFT', () => {
   let whitelist4
   let unwhitelisted
 
+  let merkleTree
   let nft
   let proof
 
@@ -18,23 +19,27 @@ describe('MerkleNFT', () => {
     ;[whitelist1, whitelist2, whitelist3, whitelist4, unwhitelisted] = await ethers.getSigners()
     const whitelist = [whitelist1, whitelist2, whitelist3, whitelist4]
     const leafNodes = whitelist.map((addr) => keccak256(addr.address))
-    const merkleTree = new MerkleTree(leafNodes, keccak256, { sort: true })
+    merkleTree = new MerkleTree(leafNodes, keccak256, { sort: true })
     const rootHash = merkleTree.getRoot()
-    proof = merkleTree.getHexProof(keccak256(whitelist1.address))
-    console.log('proof: ', proof)
 
     const NFT = await ethers.getContractFactory('NFT')
     nft = await NFT.deploy(rootHash)
     await nft.deployed()
   })
 
-  describe('Minting', () => {
+  describe('Whitelist Mint', async () => {
     it('allows whitelisted address to mint', async () => {
+      proof = merkleTree.getHexProof(keccak256(whitelist1.address))
       await nft.connect(whitelist1).whitelistMint(proof)
     })
 
     it('does not allow un-whitelisted address to mint', async () => {
-      await nft.connect(unwhitelisted).whitelistMint(proof)
+      const badProof = merkleTree.getHexProof(keccak256(unwhitelisted.address))
+      await expectRevert(
+        nft.connect(unwhitelisted).whitelistMint(badProof),
+        'Caller address is not whitelisted',
+      )
+      // await nft.connect(unwhitelisted).whitelistMint(badProof)
     })
   })
 })
