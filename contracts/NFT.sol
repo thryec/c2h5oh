@@ -25,7 +25,7 @@ contract NFT is ERC721A, Ownable, MerkleWhitelist {
     address addr4 = 0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65; // public whitelist wallet 2
 
     // track whitelist addresses that have already claimed their mint
-    mapping(address => bool) public whitelistClaimed;
+    mapping(address => bool) public publicWhitelistClaimed;
 
     /// @notice _tokenIds to keep track of the number of NFTs minted
     using Counters for Counters.Counter;
@@ -46,7 +46,8 @@ contract NFT is ERC721A, Ownable, MerkleWhitelist {
         require(quantity > 0 && quantity < 6, "Can only mint max 5 NFTs!");
         require(msg.value >= quantity * MINT_PRICE, "Did not send enough eth.");
         // check total supply just in case
-        // check mint time
+        // check if contract is unpaused
+        publicWhitelistClaimed[msg.sender] = true;
         _safeMint(msg.sender, quantity);
     }
 

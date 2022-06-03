@@ -82,6 +82,8 @@ describe('Merkle Whitelist NFT', () => {
         .publicWhitelistMint(proof, mintQty, { value: mintPrice.mul(2) })
     })
 
+    it('does not allow public address to mint twice', async () => {})
+
     it('does not allow public non-whitelisted address to mint', async () => {
       const badProof = pubMerkleTree.getHexProof(keccak256(unwhitelisted.address))
       await expectRevert(
