@@ -51,7 +51,7 @@ contract MerkleWhitelist is Ownable {
     modifier onlyPublicWhitelist(bytes32[] memory proof) {
         require(
             _verifyPublicSender(proof),
-            "MerkleWhitelist: Caller is not whitelisted"
+            "PublicMerkleWhitelist: Caller is not whitelisted"
         );
         _;
     }
